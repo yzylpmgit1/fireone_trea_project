@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小蝌蚪找妈妈 - 涂色绘本</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+        
+        .coloring-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .illustration {
+            flex: 1;
+            min-width: 400px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .color-guide {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .color-guide h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .color-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            margin-right: 15px;
+            border: 2px solid #333;
+        }
+        
+        .color-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        .tools {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tool-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .tool-button:hover {
+            background-color: #45a049;
+        }
+        
+        .tool-button.active {
+            background-color: #2196F3;
+        }
+        
+        .color-picker {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.active {
+            border: 3px solid #333;
+        }
+        
+        .instructions {
+            background-color: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .instructions h2 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .coloring-area {
+                flex-direction: column;
+            }
+            
+            .illustration,
+            .color-guide {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>小蝌蚪找妈妈</h1>
+        
+        <div class="coloring-area">
+            <div class="illustration">
+                <div class="tools">
+                    <button class="tool-button active" data-tool="brush">画笔</button>
+                    <button class="tool-button" data-tool="eraser">橡皮擦</button>
+                    <button class="tool-button" data-tool="reset">重置</button>
+                </div>
+                
+                <div class="color-picker">
+                    <div class="color-option active" style="background-color: #00bfff;" data-color="#00bfff"></div>
+                    <div class="color-option" style="background-color: #ff6b6b;" data-color="#ff6b6b"></div>
+                    <div class="color-option" style="background-color: #4ecdc4;" data-color="#4ecdc4"></div>
+                    <div class="color-option" style="background-color: #45b7d1;" data-color="#45b7d1"></div>
+                    <div class="color-option" style="background-color: #96ceb4;" data-color="#96ceb4"></div>
+                    <div class="color-option" style="background-color: #ffeaa7;" data-color="#ffeaa7"></div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="coloringCanvas" width="400" height="400"></canvas>
+                </div>
+            </div>
+            
+            <div class="color-guide">
+                <h2>涂色指引</h2>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #00bfff;"></div>
+                    <div class="color-name">小蝌蚪的身体 - 蓝色</div>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #ff6b6b;"></div>
+                    <div class="color-name">青蛙妈妈的身体 - 红色</div>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #4ecdc4;"></div>
+                    <div class="color-name">水草 - 青色</div>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #45b7d1;"></div>
+                    <div class="color-name">河水 - 浅蓝色</div>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #96ceb4;"></div>
+                    <div class="color-name">荷叶 - 绿色</div>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #ffeaa7;"></div>
+                    <div class="color-name">太阳 - 黄色</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>故事简介</h2>
+            <p>从前，有一群可爱的小蝌蚪，它们在河里快乐地游来游去。有一天，它们决定去找自己的妈妈。</p>
+            <p>它们遇到了很多动物，问它们："你是我们的妈妈吗？"但都不是。最后，它们终于找到了自己的妈妈——一只美丽的青蛙！</p>
+            <p>现在，请你给这幅画涂上漂亮的颜色，帮助小蝌蚪找到它们的妈妈吧！</p>
+        </div>
+    </div>
+    
+    <script>
+        // 获取画布和上下文
+        const canvas = document.getElementById('coloringCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置画布尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawOutline();
+        }
+        
+        // 初始调整画布大小
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 绘制轮廓
+        function drawOutline() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景 - 河水
+            ctx.fillStyle = '#f0f8ff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制太阳
+            ctx.beginPath();
+            ctx.arc(canvas.width - 60, 60, 35, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 太阳光芒
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 / 8) * i;
+                const x1 = canvas.width - 60 + Math.cos(angle) * 35;
+                const y1 = 60 + Math.sin(angle) * 35;
+                const x2 = canvas.width - 60 + Math.cos(angle) * 50;
+                const y2 = 60 + Math.sin(angle) * 50;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // 绘制荷叶
+            ctx.beginPath();
+            ctx.ellipse(120, canvas.height - 60, 70, 35, 0, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 荷叶茎
+            ctx.beginPath();
+            ctx.moveTo(120, canvas.height - 60);
+            ctx.lineTo(120, canvas.height - 20);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制水草
+            ctx.beginPath();
+            ctx.moveTo(60, canvas.height - 120);
+            ctx.quadraticCurveTo(70, canvas.height - 180, 80, canvas.height - 120);
+            ctx.quadraticCurveTo(90, canvas.height - 160, 100, canvas.height - 100);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(90, canvas.height - 140);
+            ctx.quadraticCurveTo(100, canvas.height - 200, 110, canvas.height - 140);
+            ctx.quadraticCurveTo(120, canvas.height - 180, 130, canvas.height - 120);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制青蛙妈妈
+            // 青蛙的身体
+            ctx.beginPath();
+            ctx.ellipse(canvas.width - 120, canvas.height - 100, 50, 40, 0, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 青蛙的眼睛
+            ctx.beginPath();
+            ctx.arc(canvas.width - 140, canvas.height - 120, 10, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(canvas.width - 100, canvas.height - 120, 10, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 青蛙的瞳孔
+            ctx.beginPath();
+            ctx.arc(canvas.width - 138, canvas.height - 120, 4, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(canvas.width - 98, canvas.height - 120, 4, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 青蛙的嘴巴
+            ctx.beginPath();
+            ctx.arc(canvas.width - 120, canvas.height - 95, 12, 0, Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 青蛙的前腿
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 160, canvas.height - 90);
+            ctx.quadraticCurveTo(canvas.width - 180, canvas.height - 80, canvas.width - 170, canvas.height - 60);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 80, canvas.height - 90);
+            ctx.quadraticCurveTo(canvas.width - 60, canvas.height - 80, canvas.width - 70, canvas.height - 60);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 青蛙的后腿
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 140, canvas.height - 60);
+            ctx.quadraticCurveTo(canvas.width - 150, canvas.height - 30, canvas.width - 130, canvas.height - 20);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 100, canvas.height - 60);
+            ctx.quadraticCurveTo(canvas.width - 90, canvas.height - 30, canvas.width - 110, canvas.height - 20);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制小蝌蚪
+            const tadpoles = [
+                { x: 150, y: 150, angle: 0 },
+                { x: 180, y: 120, angle: -Math.PI/4 },
+                { x: 200, y: 160, angle: Math.PI/4 },
+                { x: 220, y: 130, angle: -Math.PI/6 }
+            ];
+            
+            tadpoles.forEach(tadpole => {
+                // 保存当前状态
+                ctx.save();
+                // 移动到蝌蚪位置并旋转
+                ctx.translate(tadpole.x, tadpole.y);
+                ctx.rotate(tadpole.angle);
+                
+                // 蝌蚪的身体
+                ctx.beginPath();
+                ctx.arc(0, 0, 18, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 蝌蚪的眼睛
+                ctx.beginPath();
+                ctx.arc(8, -5, 3, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 蝌蚪的尾巴
+                ctx.beginPath();
+                ctx.moveTo(18, 0);
+                ctx.quadraticCurveTo(35, -8, 40, 0);
+                ctx.quadraticCurveTo(35, 8, 18, 0);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 恢复状态
+                ctx.restore();
+            });
+        }
+        
+        // 绘制轮廓
+        drawOutline();
+        
+        // 工具和颜色状态
+        let currentTool = 'brush';
+        let currentColor = '#00bfff';
+        let isDrawing = false;
+        
+        // 工具按钮事件
+        document.querySelectorAll('.tool-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
+                // 添加当前按钮的active类
+                this.classList.add('active');
+                // 设置当前工具
+                currentTool = this.dataset.tool;
+            });
+        });
+        
+        // 颜色选择事件
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有颜色选项的active类
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                // 添加当前颜色选项的active类
+                this.classList.add('active');
+                // 设置当前颜色
+                currentColor = this.dataset.color;
+            });
+        });
+        
+        // 鼠标事件
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // 触摸事件
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            if (currentTool === 'brush') {
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = currentColor;
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            } else if (currentTool === 'eraser') {
+                ctx.clearRect(x - 10, y - 10, 20, 20);
+            }
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.closePath();
+        }
+        
+        // 重置按钮
+        document.querySelector('[data-tool="reset"]').addEventListener('click', function() {
+            if (confirm('确定要重置吗？所有涂色进度将丢失。')) {
+                drawOutline();
+            }
+        });
+    </script>
+</body>
+</html>
