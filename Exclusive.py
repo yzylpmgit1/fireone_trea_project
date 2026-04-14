@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-a = hello word 
-=======
+
 a = "hello word "
->>>>>>> 20260414-test
+b= 1
 print(f"专属main分支的文件:{a}")
