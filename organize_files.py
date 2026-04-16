@@ -55,10 +55,11 @@ def get_folder_name(extension):
 def organize_files(root_dir):
     """
     整理指定目录下的文件。
+    只处理当前目录的文件，不递归处理子目录。
     """
     root_path = Path(root_dir)
     
-    # 遍历目录
+    # 遍历目录，只处理文件
     for item in root_path.iterdir():
         if item.is_file():
             # 检查是否忽略
@@ -79,11 +80,6 @@ def organize_files(root_dir):
             dest_path = folder_path / item.name
             print(f"移动 {item.name} 到 {folder_name}/")
             shutil.move(str(item), str(dest_path))
-        
-        elif item.is_dir():
-            # 递归处理子目录，但跳过忽略的目录
-            if item.name not in IGNORE_DIRS:
-                organize_files(item)
 
 def main():
     # 获取当前脚本所在目录
